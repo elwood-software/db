@@ -25,14 +25,17 @@ select
 from http(
     (
         'GET',
-        'https://elwood.software/db/latest.json'
-        array[],
+        'https://elwood.software/db/latest.json',
+        array[]::http_header[],
         null,
         null
     )
 ) x,
 lateral (
     select
-        ((row_to_json(x) -> 'content') #>> '{}')::json -> 0
+        ((row_to_json(x) -> 'content') #>> '{}')::json
 ) resp(contents);
+
+create extension "elwood-supabase";
+
 ```

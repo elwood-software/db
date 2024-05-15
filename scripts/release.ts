@@ -23,14 +23,11 @@ import {loadSync} from 'https://deno.land/std@0.220.1/dotenv/mod.ts';
 import * as semver from "https://deno.land/std@0.224.0/semver/mod.ts";
 import {parseArgs} from 'https://deno.land/std@0.224.0/cli/mod.ts';
 
-
 const args = parseArgs(Deno.args, {
   boolean: ['overwrite']
 });
 const versionFileTemplate = 'elwood--${version}.sql';
-const ignoreMigrations: RegExp[] = [
-  /_schema\.sql$/,
-]
+const ignoreMigrations: RegExp[] = []
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const envPath = join(__dirname, '../.env');
@@ -65,12 +62,20 @@ if (args.overwrite === false) {
 }
 
 
+const sqlFiles:string[] =[];
 const toSquash:string[] = [];
 
 for await (const dirEntry of Deno.readDir(migrationsDir)) {
   if (dirEntry.isFile && !ignoreMigrations.some((r) => r.test(dirEntry.name))) {
-    toSquash.push(await Deno.readTextFile(join(migrationsDir, dirEntry.name)));
+    sqlFiles.push(dirEntry.name);
   }
+
+}
+
+sqlFiles.sort();
+
+for  (const sqlFileName of sqlFiles) {
+  toSquash.push(await Deno.readTextFile(join(migrationsDir, sqlFileName)));
 }
 
 
