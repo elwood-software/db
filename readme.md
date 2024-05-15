@@ -1,5 +1,7 @@
 # Elwood Database Control
 
+Get more information at [elwood.software](https://elwood.software).
+
 This is a [PostgreSQL TLE](https://github.com/aws/pg_tle) (extension) which attempts to provide supabase projects.
 
 Docs available at [elwood.software/docs/db](https://elwood.software/docs/db).

@@ -1,12 +1,10 @@
 {
-  "deno.enablePaths": ["scripts"],
+  "editor.tabSize": 2,
+  "deno.enablePaths": [
+    "scripts"
+  ],
   "deno.lint": true,
   "deno.unstable": true,
-  "eslint.workingDirectories": [
-    {
-      "mode": "auto"
-    }
-  ],  
   "sqltools.connections": [
     {
       "previewLimit": 50,
@@ -16,19 +14,18 @@
       "connectString": "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
     }
   ],
-  "editor.tabSize": 2,
   "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "denoland.vscode-deno",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true
   },
   "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "denoland.vscode-deno",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true
   },
   "[sql]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.defaultFormatter": "denoland.vscode-deno",
     "editor.formatOnSave": true,
     "editor.formatOnPaste": true
   },
