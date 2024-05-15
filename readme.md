@@ -13,6 +13,7 @@ Requires:
 */
 create extension if not exists http with schema extensions;
 create extension if not exists pg_tle;
+create extension if not exists vector schema extensions;
 drop extension if exists "elwood-supabase";
 select pgtle.uninstall_extension_if_exists('elwood-supabase');
 select
