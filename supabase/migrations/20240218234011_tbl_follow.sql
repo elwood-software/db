@@ -1,6 +1,6 @@
 create table if not exists elwood.follow (
   "instance_id" uuid not null default '00000000-0000-0000-0000-000000000000',
-  "id" uuid not null default uuid_generate_v4(),
+  "id" uuid not null default extensions.uuid_generate_v4(),
   "user_id" uuid not null,
   "type" elwood.follow_type not null DEFAULT 'SAVE',
   "asset_type" text not null,

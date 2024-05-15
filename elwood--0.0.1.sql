@@ -176,7 +176,7 @@ alter table elwood."setting" enable row level security;
 
 CREATE TABLE IF NOT EXISTS elwood.activity (
   "instance_id" uuid NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000',
-  "id" uuid NOT NULL DEFAULT uuid_generate_v4(),
+  "id" uuid NOT NULL DEFAULT extensions.uuid_generate_v4(),
   "user_id" uuid NOT NULL,
   "member_id" uuid NOT NULL,
   "asset_id" text NOT NULL,
@@ -250,7 +250,7 @@ EXECUTE FUNCTION elwood.before_activity_insert();
 
 create table if not exists elwood.follow (
   "instance_id" uuid not null default '00000000-0000-0000-0000-000000000000',
-  "id" uuid not null default uuid_generate_v4(),
+  "id" uuid not null default extensions.uuid_generate_v4(),
   "user_id" uuid not null,
   "type" elwood.follow_type not null DEFAULT 'SAVE',
   "asset_type" text not null,
@@ -337,7 +337,7 @@ EXECUTE FUNCTION elwood.before_follow_insert();
 
 create table if not exists elwood.notification (
   "instance_id" uuid not null default '00000000-0000-0000-0000-000000000000',
-  "id" uuid not null default uuid_generate_v4(),
+  "id" uuid not null default extensions.uuid_generate_v4(),
   "user_id" uuid not null,
   "type" text not null default 'GENERIC',
   "data" jsonb not null default '{}'::jsonb,
