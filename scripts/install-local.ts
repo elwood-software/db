@@ -67,17 +67,35 @@ console.log('Running latest migration...');
 const latest = JSON.parse(await Deno.readTextFile(join(__dirname, '../versions/latest.json')));
 
 try {
-  const {warnings} = await client.queryObject(latest.sql)
+  const steps:[string,any[]][] = [
+    [`create extension if not exists http with schema extensions;`,[]],
+    [`create extension if not exists pg_tle;`,[]],
+    [`create extension if not exists vector schema extensions;`,[]],
+    [`drop extension if exists "elwood-supabase";`,[]],
+    [`select pgtle.uninstall_extension_if_exists('elwood-supabase');`,[]],
+    [`select pgtle.install_extension('elwood-supabase','${latest.version}','Elwood Supabase Database', $1);`, [latest.sql]],
+    [`create extension "elwood-supabase";`,[]]
+  ]
 
-console.log('COMPETE!!');
+  for (const [sql,params] of steps) {
+
+  const {warnings} = await client.queryObject(sql,params)
+
+console.log(`COMPETE!! ${sql}`);
 warnings.forEach(w => {
-  console.log(`[${w.severity}] ${w.message} (${w.line})`)
+  console.log(` [${w.severity}] ${w.message} (${w.line})`)
 });
+
+  }
 
 }
 catch (err) {
   console.log('ERROR', err.message)
 }
+
+console.log((await client.queryObject('SELECT extname FROM pg_extension;')).rows);
+console.log((await client.queryObject('SELECT schema_name FROM information_schema.schemata;')).rows);
+
 
 await executeDocker('stop','elwood_db_test');
 await executeDocker('rm','elwood_db_test');
