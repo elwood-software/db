@@ -1,0 +1,20 @@
+{
+  "deno.enablePaths": ["scripts"],
+  "deno.lint": true,
+  "deno.unstable": true,
+  "eslint.workingDirectories": [
+    {
+      "mode": "auto"
+    }
+  ],  
+  "sqltools.connections": [
+    {
+      "previewLimit": 50,
+      "server": "localhost",
+      "driver": "PostgreSQL",
+      "name": "local",
+      "connectString": "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
+    }
+  ],
+  "editor.tabSize": 2
+}
