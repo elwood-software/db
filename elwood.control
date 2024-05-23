@@ -1,6 +1,6 @@
 # elwood_db supabase extension
 comment = 'Elwood for your Supabase project'
-default_version = '0.0.1'
+default_version = '0.0.2'
 requires = moddatetime
 superuser = true
 relocatable = false
