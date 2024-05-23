@@ -78,7 +78,8 @@ DROP TYPE IF EXISTS elwood.member_role CASCADE;
 CREATE TYPE elwood.member_role AS ENUM (
   'ADMIN',
   'MANAGER',
-  'MEMBER'
+  'MEMBER',
+  'MEMBER_RO'
 );
 
 DROP TYPE IF EXISTS elwood.activity_type CASCADE;

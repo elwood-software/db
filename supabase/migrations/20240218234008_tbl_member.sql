@@ -22,13 +22,20 @@ CREATE UNIQUE INDEX IF NOT EXISTS elwood_idx_member_user_id ON elwood.member("in
 CREATE UNIQUE INDEX IF NOT EXISTS elwood_idx_member_username ON elwood.member("instance_id", "username");
 alter table elwood."member" enable row level security;
 
-DROP FUNCTION IF EXISTS elwood.is_a_member() CASCADE;
-create function elwood.is_a_member()
+DROP FUNCTION IF EXISTS elwood.is_a_member(boolean) CASCADE;
+create function elwood.is_a_member(not_read_only boolean default false)
 returns boolean
 language plpgsql
 security definer
 as $$
 begin
+  if not_read_only then
+    return exists (
+      select 1 from elwood.member
+      where auth.uid() = user_id AND "role" != 'MEMBER_RO'
+    );
+  end if;
+
   return exists (
     select 1 from elwood.member
     where auth.uid() = user_id 
