@@ -12,3 +12,9 @@ create unique index if not exists elwood_idx_settings_name on elwood.setting (
 );
 
 alter table elwood."setting" enable row level security;
+
+insert into elwood.setting (name, value) 
+  values ('db_ptle_version', json_build_object('version', '$$ELWOOD_PTLE_VERSION$$'))
+  ON CONFLICT (name) 
+  DO UPDATE 
+    SET value = json_build_object('version', '$$ELWOOD_PTLE_VERSION$$');

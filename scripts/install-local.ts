@@ -10,32 +10,17 @@
  * Have questions, email us at hello@elwood.software
  */
 
-import { dirname, join } from "node:path";
-import { fileURLToPath } from "node:url";
 import { Client } from "https://deno.land/x/postgres@v0.19.3/mod.ts";
 import { interval } from "https://deno.land/x/delayed@2.1.1/mod.ts";
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
-
-await executeDocker("stop", "elwood_db_test");
-await executeDocker("rm", "elwood_db_test");
-await executeDocker(
-  "run",
-  "--name=elwood_db_test",
-  "-d",
-  "-p",
-  "5432:5432",
-  "-e",
-  "POSTGRES_PASSWORD=simple_password",
-  "public.ecr.aws/supabase/postgres:15.1.1.37",
-);
+import { compile } from "./compile.ts";
 
 const client = new Client({
   user: "postgres",
   database: "postgres",
-  password: "simple_password",
-  hostname: "localhost",
-  port: 5432,
+  password: "postgres",
+  hostname: "127.0.0.1",
+  port: 54322,
 });
 
 async function connect() {
@@ -58,55 +43,37 @@ for await (const _ of interval(connect, 500, {})) {
 console.log("Connected to postgres");
 console.log("Running latest migration...");
 
-const latest = JSON.parse(
-  await Deno.readTextFile(join(__dirname, "../versions/latest.json")),
-);
+const version = `0.0.0-local.${Date.now()}`;
+const sql = await compile(version);
 
 try {
   const steps: [string, string[]][] = [
     [`create extension if not exists http with schema extensions;`, []],
     [`create extension if not exists pg_tle;`, []],
     [`create extension if not exists vector schema extensions;`, []],
-    [`drop extension if exists "elwood-supabase";`, []],
+    [`drop extension if exists "elwood-supabase" cascade;`, []],
     [`select pgtle.uninstall_extension_if_exists('elwood-supabase');`, []],
+    [`drop extension if exists "elwood-supabase";`, []],
     [
-      `select pgtle.install_extension('elwood-supabase','${latest.version}','Elwood Supabase Database', $1);`,
-      [latest.sql],
+      `select pgtle.install_extension('elwood-supabase','${version}','Elwood Supabase Database', $1);`,
+      [sql],
     ],
     [`create extension "elwood-supabase";`, []],
   ];
 
   for (const [sql, params] of steps) {
+    console.log("running...");
+    console.log(` > ${sql}`);
+
     const { warnings } = await client.queryObject(sql, params);
 
-    console.log(`COMPETE!! ${sql}`);
+    console.log(` > complete!`);
     warnings.forEach((w) => {
-      console.log(` [${w.severity}] ${w.message} (${w.line})`);
+      console.log(` > [${w.severity}] ${w.message} (${w.line})`);
     });
   }
 } catch (err) {
   console.log("ERROR", err.message);
 }
 
-console.log(
-  (await client.queryObject("SELECT extname FROM pg_extension;")).rows,
-);
-console.log(
-  (await client.queryObject(
-    "SELECT schema_name FROM information_schema.schemata;",
-  )).rows,
-);
-
-await executeDocker("stop", "elwood_db_test");
-await executeDocker("rm", "elwood_db_test");
-
 await client.end();
-
-async function executeDocker(...args: string[]): Promise<void> {
-  const cmd = new Deno.Command("docker", {
-    args,
-    stdout: "inherit",
-    stderr: "inherit",
-  });
-  await cmd.output();
-}
