@@ -1,19 +1,11 @@
 {
   "editor.tabSize": 2,
   "deno.enablePaths": [
-    "scripts"
+    "scripts",
+    "tests"
   ],
   "deno.lint": true,
   "deno.unstable": true,
-  "sqltools.connections": [
-    {
-      "previewLimit": 50,
-      "server": "localhost",
-      "driver": "PostgreSQL",
-      "name": "local",
-      "connectString": "postgresql://postgres:postgres@127.0.0.1:54322/postgres"
-    }
-  ],
   "[typescript]": {
     "editor.defaultFormatter": "denoland.vscode-deno",
     "editor.formatOnSave": true,
