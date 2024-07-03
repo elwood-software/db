@@ -1,0 +1,8 @@
+{
+  "version": "0.4.0",
+  "sql": "-- src:001_node\ncreate table \"elwood\".\"node\" (\"id\" uuid default uuid_generate_v4() primary key)\nalter table \"elwood\".\"node\" enable row level security\n--\n\n\n-- src:002_run\ncreate table \"elwood\".\"run\" (\"id\" serial primary key, \"created_at\" timestamptz default now() not null, \"status\" text default 'queued' not null, \"result\" varchar default 'none', \"tracking_id\" uuid default uuid_generate_v4() not null, \"report\" jsonb default '{}'::jsonb not null, \"configuration\" jsonb, \"metadata\" jsonb, \"variables\" jsonb default '{}'::jsonb, \"started_at\" timestamptz, \"ended_at\" timestamptz, constraint \"idx_elwood_run_tracking_id\" unique (\"tracking_id\"))\nalter table \"elwood\".\"run\" enable row level security\ncreate table \"elwood\".\"run_event\" (\"id\" serial primary key, \"created_at\" timestamptz default now() not null, \"type\" text, \"tracking_id\" uuid default uuid_generate_v4() not null, \"data\" jsonb default '{}'::jsonb not null)\nalter table \"elwood\".\"run_event\" enable row level security\n--\n\n",
+  "migrations": [
+    "001_node",
+    "002_run"
+  ]
+}
