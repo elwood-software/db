@@ -1,9 +1,7 @@
 {
   "editor.tabSize": 2,
   "deno.enablePaths": [
-    "src",
-    "scripts",
-    "tests"
+    ".",
   ],
   "deno.lint": true,
   "deno.unstable": true,
