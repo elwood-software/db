@@ -1,6 +1,8 @@
 import { Kysely, sql } from "./deps.ts";
 
-export type CreateFunctionArgs = Array<[string, string]>;
+export type CreateFunctionArgs = Array<
+  [string, string] | [string, string, string]
+>;
 
 export type CreateFunctionInput = {
   name: string;
@@ -8,6 +10,7 @@ export type CreateFunctionInput = {
   args?: CreateFunctionArgs;
   declare?: string[];
   returns?: string;
+  securityDefiner?: boolean;
 };
 
 export async function createFunction(
@@ -25,7 +28,13 @@ export async function createFunction(
 
   const nameWithSchema = `${name}.${input.name}`;
   const types = args.map(([_, type]) => `${type}`).join(", ");
-  const argDefs = args.map(([name, type]) => `${name} ${type}`).join(", ");
+  const argDefs = args.map(([name, type, defaultTo]) => {
+    if (defaultTo) {
+      return `${name} ${type} DEFAULT ${defaultTo}`;
+    }
+
+    return `${name} ${type}`;
+  }).join(", ");
 
   await sql`DROP FUNCTION IF EXISTS ${sql.raw(nameWithSchema)}(${
     sql.raw(types)
@@ -34,6 +43,7 @@ export async function createFunction(
   const q = sql`CREATE function ${sql.raw(nameWithSchema)}(${sql.raw(argDefs)})
       RETURNS ${sql.raw(returns)}
       LANGUAGE plpgsql
+      ${input.securityDefiner ? sql.raw("SECURITY DEFINER") : sql.raw("")}
       as $$
       declare
         ${sql.raw(declare.join("\n"))}

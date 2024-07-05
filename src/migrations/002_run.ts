@@ -1,5 +1,6 @@
 import { type Kysely, sql } from "../deps.ts";
 import { createTable } from "../create-table.ts";
+import { createFunction } from "../create-function.ts";
 
 enum TableName {
   Run = "run",
@@ -44,11 +45,6 @@ export async function up(db: Kysely): Promise<void> {
       .addColumn("ended_at", "timestamptz")
       .addUniqueConstraint("idx_elwood_run_tracking_id", ["tracking_id"]));
 
-  // don't let authenticated see the instance_id
-  await sql`revoke select (instance_id) on table ${
-    sql.id(TableName.Run)
-  } from authenticated`.execute(db);
-
   await db.withSchema("public").schema.createView(ViewName.Run).as(
     db.selectFrom(TableName.Run)
       .selectAll()
@@ -85,9 +81,27 @@ export async function up(db: Kysely): Promise<void> {
         "jsonb",
         (col) => col.notNull().defaultTo(sql`'{}'::jsonb`),
       ));
+
+  await db.withSchema("public").schema.createView(ViewName.RunEvent).as(
+    db.selectFrom(TableName.RunEvent)
+      .select("id")
+      .select("created_at")
+      .select("type")
+      .select("tracking_id")
+      .select("data")
+      .where(
+        "instance_id",
+        "=",
+        sql`elwood.current_instance_id()`,
+      ),
+  )
+    .orReplace()
+    .execute();
 }
 
 export async function down(db: Kysely): Promise<void> {
   await db.schema.dropTable(TableName.Run).execute();
   await db.schema.dropTable(TableName.RunEvent).execute();
+  await db.schema.dropView(ViewName.Run).execute();
+  await db.schema.dropView(ViewName.RunEvent).execute();
 }
