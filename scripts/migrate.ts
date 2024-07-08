@@ -10,14 +10,20 @@ import {
   sql,
 } from "npm:kysely";
 import { parseArgs } from "https://deno.land/std@0.224.0/cli/mod.ts";
+import * as dotenv from "jsr:@std/dotenv";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 const args = parseArgs(Deno.args, {});
 
+dotenv.loadSync({
+  envPath: path.join(__dirname, "../.env"),
+  export: true,
+});
+
 const db = new Kysely<any>({
   dialect: new PostgresDialect({
     pool: new pg.Pool({
-      connectionString:
+      connectionString: Deno.env.get("DB_URL") ??
         "postgresql://postgres:postgres@127.0.0.1:54322/postgres",
     }),
   }),

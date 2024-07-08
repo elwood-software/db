@@ -2,9 +2,15 @@
   "version": "3",
   "packages": {
     "specifiers": {
+      "jsr:@std/dotenv": "jsr:@std/dotenv@0.224.1",
       "npm:@types/node": "npm:@types/node@18.16.19",
       "npm:kysely": "npm:kysely@0.27.3",
       "npm:pg": "npm:pg@8.12.0"
+    },
+    "jsr": {
+      "@std/dotenv@0.224.1": {
+        "integrity": "5e254d0cbaf62188da372ab8866f965fa8a3ec96f19232482c8697b319c308b4"
+      }
     },
     "npm": {
       "@types/node@18.16.19": {
