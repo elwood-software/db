@@ -153,6 +153,11 @@ export async function up(db: Kysely): Promise<void> {
     ],
     body: `
       SELECT "num" into _current_num FROM elwood.run WHERE "instance_id" = elwood.current_instance_id() ORDER BY "num" DESC LIMIT 1; 
+
+      IF _current_num IS NULL THEN
+        _current_num := 0;
+      END IF;
+
       NEW."num" = _current_num + 1;
       return NEW;
     `,
