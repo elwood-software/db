@@ -1,14 +1,7 @@
 import { type Kysely, sql } from "../deps.ts";
 import { createTable } from "../create-table.ts";
 import { createFunction } from "../create-function.ts";
-
-enum TableName {
-  Member = "member",
-}
-
-enum ViewName {
-  Member = "elwood_member",
-}
+import { TableName, ViewName } from "../constants.ts";
 
 export async function up(db: Kysely): Promise<void> {
   // run

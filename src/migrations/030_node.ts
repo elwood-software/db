@@ -1,9 +1,7 @@
 import { type Kysely, sql } from "../deps.ts";
 import { createTable } from "../create-table.ts";
 
-enum TableName {
-  Node = "node",
-}
+import { TableName } from "../constants.ts";
 
 export async function up(db: Kysely): Promise<void> {
   await createTable(db, TableName.Node, (tbl) =>

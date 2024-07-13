@@ -2,15 +2,7 @@ import { type Kysely, sql } from "../deps.ts";
 import { createTable } from "../create-table.ts";
 import { createFunction } from "../create-function.ts";
 
-enum TableName {
-  Run = "run",
-  RunEvent = "run_event",
-}
-
-enum ViewName {
-  Run = "elwood_run",
-  RunEvent = "elwood_run_event",
-}
+import { TableName, ViewName } from "../constants.ts";
 
 export async function up(db: Kysely): Promise<void> {
   // run
@@ -26,6 +18,10 @@ export async function up(db: Kysely): Promise<void> {
         "timestamptz",
         (col) => col.notNull().defaultTo(sql`now()`),
       )
+      .addColumn("workflow_id", "uuid")
+      .addColumn("name", "text")
+      .addColumn("label", "text")
+      .addColumn("description", "text")
       .addColumn("status", "text", (col) => col.notNull().defaultTo("queued"))
       .addColumn("result", "varchar", (col) => col.defaultTo("none"))
       .addColumn(
@@ -48,6 +44,12 @@ export async function up(db: Kysely): Promise<void> {
       .addColumn("variables", "jsonb", (col) => col.defaultTo(sql`'{}'::jsonb`))
       .addColumn("started_at", "timestamptz")
       .addColumn("ended_at", "timestamptz")
+      .addForeignKeyConstraint(
+        "elwood_run_workflow_id",
+        ["workflow_id"],
+        TableName.RunWorkflow,
+        ["id"],
+      )
       .addUniqueConstraint("idx_elwood_run_tracking_id", ["tracking_id"]));
 
   await sql`alter publication supabase_realtime add table elwood.run;`
@@ -73,64 +75,6 @@ export async function up(db: Kysely): Promise<void> {
     sql.id(ViewName.Run)
   } SET  (security_invoker=on);`.execute(db);
 
-  // run event
-  await createTable(db, TableName.RunEvent, (tbl) =>
-    tbl
-      .addColumn(
-        "id",
-        "serial",
-        (col) => col.primaryKey(),
-      )
-      .addColumn(
-        "created_at",
-        "timestamptz",
-        (col) => col.notNull().defaultTo(sql`now()`),
-      )
-      .addColumn("type", "text")
-      .addColumn(
-        "tracking_id",
-        "uuid",
-        (col) => col.notNull().defaultTo(sql`uuid_generate_v4()`),
-      )
-      .addColumn(
-        "data",
-        "jsonb",
-        (col) => col.notNull().defaultTo(sql`'{}'::jsonb`),
-      ));
-
-  await sql`GRANT USAGE ON SEQUENCE elwood.run_event_id_seq TO service_role;`
-    .execute(db);
-
-  await db.withSchema("public").schema.createView(ViewName.RunEvent).as(
-    db.selectFrom(TableName.RunEvent)
-      .select("id")
-      .select("created_at")
-      .select("type")
-      .select("tracking_id")
-      .select("data")
-      .where(
-        "instance_id",
-        "=",
-        sql`elwood.current_instance_id()`,
-      ),
-  )
-    .orReplace()
-    .execute();
-
-  await sql`alter view public.${
-    sql.id(ViewName.RunEvent)
-  } SET  (security_invoker=on);`.execute(db);
-
-  await sql`alter publication supabase_realtime add table elwood.run_event;`
-    .execute(db);
-
-  await sql`create policy "allow service role to read all run_event"
-            on "elwood"."run_event"
-            as PERMISSIVE
-            for ALL
-            to service_role
-            using (true);`.execute(db);
-
   await sql`create policy "allow service role to read all run"
             on "elwood"."run"
             as PERMISSIVE
@@ -150,14 +94,36 @@ export async function up(db: Kysely): Promise<void> {
     returns: "trigger",
     declare: [
       "_current_num integer;",
+      "_name text;",
+      "_label text;",
+      "_configuration jsonb;",
     ],
     body: `
       SELECT "num" into _current_num FROM elwood.run WHERE "instance_id" = elwood.current_instance_id() ORDER BY "num" DESC LIMIT 1; 
+
+      _name := NEW."name";
+      _label := NEW."label";
+      _configuration := NEW."configuration";
+
+      IF NEW."workflow_id" IS NOT NULL THEN
+        SELECT "name", "label", "configuration" INTO _name, _label, _configuration FROM elwood.run_workflow WHERE "id" = NEW."workflow_id";
+      END IF;
+
+      IF _name IS NULL THEN 
+        _name := NEW."configuration"->>'name';
+      END IF;
+
+      IF _label IS NULL THEN
+        _label := NEW."configuration"->>'label';
+      END IF;
 
       IF _current_num IS NULL THEN
         _current_num := 0;
       END IF;
 
+      NEW."configuration" := _configuration;
+      NEW."name" := _name;
+      NEW."label" := _label;
       NEW."num" = _current_num + 1;
       return NEW;
     `,
@@ -174,7 +140,5 @@ export async function up(db: Kysely): Promise<void> {
 
 export async function down(db: Kysely): Promise<void> {
   await db.schema.dropTable(TableName.Run).cascade().execute();
-  await db.schema.dropTable(TableName.RunEvent).cascade().execute();
   await db.schema.dropView(ViewName.Run).execute();
-  await db.schema.dropView(ViewName.RunEvent).execute();
 }
