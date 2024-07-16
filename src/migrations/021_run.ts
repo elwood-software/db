@@ -1,6 +1,7 @@
 import { type Kysely, sql } from "../deps.ts";
 import { createTable } from "../create-table.ts";
 import { createFunction } from "../create-function.ts";
+import { JsonValue } from "../json.ts";
 
 import { TableName, ViewName } from "../constants.ts";
 
@@ -18,10 +19,9 @@ export async function up(db: Kysely): Promise<void> {
         "timestamptz",
         (col) => col.notNull().defaultTo(sql`now()`),
       )
-      .addColumn("workflow_id", "uuid")
-      .addColumn("name", "text")
-      .addColumn("label", "text")
-      .addColumn("description", "text")
+      .addColumn("summary", "text")
+      .addColumn("short_summary", "varchar(255)")
+      .addColumn("workflow_id", "uuid", (col) => col.notNull())
       .addColumn("status", "text", (col) => col.notNull().defaultTo("queued"))
       .addColumn("result", "varchar", (col) => col.defaultTo("none"))
       .addColumn(
@@ -39,8 +39,7 @@ export async function up(db: Kysely): Promise<void> {
         "integer",
         (col) => col.defaultTo(0),
       )
-      .addColumn("configuration", "jsonb")
-      .addColumn("metadata", "jsonb")
+      .addColumn("metadata", "jsonb", (col) => col.defaultTo(sql`'{}'::jsonb`))
       .addColumn("variables", "jsonb", (col) => col.defaultTo(sql`'{}'::jsonb`))
       .addColumn("started_at", "timestamptz")
       .addColumn("ended_at", "timestamptz")
@@ -62,6 +61,13 @@ export async function up(db: Kysely): Promise<void> {
   await db.withSchema("public").schema.createView(ViewName.Run).as(
     db.selectFrom(TableName.Run)
       .selectAll()
+      .select((q) =>
+        q.selectFrom("elwood.run_workflow").select("configuration").where(
+          "id",
+          "=",
+          q.ref("workflow_id"),
+        ).as("configuration")
+      )
       .where(
         "instance_id",
         "=",
@@ -94,36 +100,15 @@ export async function up(db: Kysely): Promise<void> {
     returns: "trigger",
     declare: [
       "_current_num integer;",
-      "_name text;",
-      "_label text;",
-      "_configuration jsonb;",
     ],
     body: `
+      
       SELECT "num" into _current_num FROM elwood.run WHERE "instance_id" = elwood.current_instance_id() ORDER BY "num" DESC LIMIT 1; 
-
-      _name := NEW."name";
-      _label := NEW."label";
-      _configuration := NEW."configuration";
-
-      IF NEW."workflow_id" IS NOT NULL THEN
-        SELECT "name", "label", "configuration" INTO _name, _label, _configuration FROM elwood.run_workflow WHERE "id" = NEW."workflow_id";
-      END IF;
-
-      IF _name IS NULL THEN 
-        _name := NEW."configuration"->>'name';
-      END IF;
-
-      IF _label IS NULL THEN
-        _label := NEW."configuration"->>'label';
-      END IF;
-
+      
       IF _current_num IS NULL THEN
         _current_num := 0;
       END IF;
 
-      NEW."configuration" := _configuration;
-      NEW."name" := _name;
-      NEW."label" := _label;
       NEW."num" = _current_num + 1;
       return NEW;
     `,
@@ -136,6 +121,44 @@ export async function up(db: Kysely): Promise<void> {
     FOR EACH ROW
     EXECUTE FUNCTION elwood.before_run_insert();
   `.execute(db);
+
+  await createFunction(db, {
+    name: "before_run_update",
+    returns: "trigger",
+    declare: [],
+    body: `
+      NEW.metadata = NEW.metadata || OLD.metadata;
+      return NEW;
+    `,
+  });
+
+  await sql`
+    CREATE TRIGGER trigger_before_run_update
+    BEFORE UPDATE
+    ON elwood.run
+    FOR EACH ROW
+    EXECUTE FUNCTION elwood.before_run_update();
+  `.execute(db);
+
+  await db.withSchema("public").schema.createView(ViewName.RunTriggers).as(
+    db.selectFrom(TableName.Run)
+      .select(() => [
+        sql<string>`"metadata"->>'trigger'`.as("trigger"),
+      ])
+      .where(
+        "instance_id",
+        "=",
+        sql`elwood.current_instance_id()`,
+      )
+      .where(sql`"metadata"->>'trigger'`, "is not", null)
+      .distinct(),
+  )
+    .orReplace()
+    .execute();
+
+  await sql`alter view public.${
+    sql.id(ViewName.RunTriggers)
+  } SET  (security_invoker=on);`.execute(db);
 }
 
 export async function down(db: Kysely): Promise<void> {

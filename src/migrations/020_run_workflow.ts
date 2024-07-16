@@ -1,5 +1,6 @@
 import { type Kysely, sql } from "../deps.ts";
 import { createTable } from "../create-table.ts";
+import { createFunction } from "../create-function.ts";
 
 import { TableName, ViewName } from "../constants.ts";
 
@@ -13,16 +14,18 @@ export async function up(db: Kysely): Promise<void> {
         (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`),
       )
       .addColumn("name", "text")
-      .addColumn("label", "text")
-      .addColumn("description", "text")
       .addColumn("configuration", "jsonb")
       .addColumn("metadata", "jsonb")
-      .addColumn("version", "smallint")
+      .addColumn("version", "smallint", (col) => col.defaultTo(0))
       .addColumn(
         "created_at",
         "timestamptz",
         (col) => col.notNull().defaultTo(sql`now()`),
-      ));
+      ).addUniqueConstraint("idx_elwood_run_workflow_name", [
+        "instance_id",
+        "name",
+        "version",
+      ]));
 
   await db.withSchema("public").schema.createView(ViewName.RunWorkflow).as(
     db.selectFrom(TableName.RunWorkflow)
@@ -60,6 +63,33 @@ export async function up(db: Kysely): Promise<void> {
             for ALL
             to authenticated
             using (true);`.execute(db);
+
+  await createFunction(db, {
+    name: "before_run_workflow_insert",
+    returns: "trigger",
+    declare: [
+      "_current_version integer;",
+    ],
+    body: `
+      SELECT "version" into _current_version FROM elwood.run_workflow WHERE "name" = NEW.name AND  "instance_id" = elwood.current_instance_id() LIMIT 1; 
+      
+      IF _current_version IS NULL THEN
+        _current_version := 0;
+      END IF;
+
+      NEW."name" := NEW."configuration"->>'name';
+      NEW."version" := _current_version + 1;
+      return NEW;
+    `,
+  });
+
+  await sql`
+    CREATE TRIGGER trigger_before_run_workflow_insert
+    BEFORE INSERT
+    ON elwood.run_workflow
+    FOR EACH ROW
+    EXECUTE FUNCTION elwood.before_run_workflow_insert();
+  `.execute(db);
 }
 
 export async function down(db: Kysely): Promise<void> {

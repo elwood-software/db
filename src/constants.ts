@@ -12,4 +12,5 @@ export enum ViewName {
   Run = "elwood_run",
   RunEvent = "elwood_run_event",
   RunWorkflow = "elwood_run_workflow",
+  RunTriggers = "elwood_run_triggers",
 }
