@@ -1,7 +1,7 @@
 {
   "tasks": {
-    "dev": "deno run --watch main.ts",
-    "migrate": "deno run --allow-net --allow-read --allow-write --allow-env scripts/migrate.ts",
-    "seed": "deno run --allow-net --allow-read --allow-write --allow-env scripts/seed.ts"
+    "migrate": "deno run --allow-net --allow-read --allow-write --allow-env ./src/cli.ts migrate",
+    "seed": "deno run --allow-net --allow-read --allow-write --allow-env ./src/cli.ts seed"
+
   }
 }
