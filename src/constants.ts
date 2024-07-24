@@ -1,6 +1,7 @@
 export enum TableName {
   Member = "member",
   Node = "node",
+  NodeType = "node_type",
   Run = "run",
   RunEvent = "run_event",
   RunWorkflow = "run_workflow",
