@@ -1,15 +1,26 @@
-import { Kysely as K } from "npm:kysely";
+import type { Kysely as K } from "npm:kysely@0.27.4";
 
 export {
-  type AliasedExpression,
   AliasNode,
   AlterTableBuilder,
   CreateTableBuilder,
-  type Expression,
+  CreateViewBuilder,
   IdentifierNode,
-  type OperationNode,
+  QueryCreator,
   sql,
-} from "npm:kysely";
+} from "npm:kysely@0.27.4";
+export type {
+  AliasedExpression,
+  ColumnType,
+  Expression,
+  Generated,
+  Insertable,
+  OperationNode,
+  Selectable,
+  Updateable,
+} from "npm:kysely@0.27.4";
+
+export { jsonObjectFrom } from "npm:kysely@0.27.4/helpers/postgres";
 
 // deno-lint-ignore no-explicit-any -- intentionally using any
-export type Kysely = K<any>;
+export type Kysely<D = any> = K<D>;

@@ -1,5 +1,5 @@
-import { type Kysely, sql } from "../deps.ts";
-import { createFunction } from "../create-function.ts";
+import { type Kysely, sql } from "../src/deps.ts";
+import { createFunction } from "../src/lib/create-function.ts";
 
 export async function up(db: Kysely): Promise<void> {
   await createFunction(db, {

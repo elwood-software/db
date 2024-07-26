@@ -1,4 +1,4 @@
-import { type Kysely, sql } from "../deps.ts";
+import { type Kysely, sql } from "../src/deps.ts";
 
 export async function up(db: Kysely): Promise<void> {
   const createSchema = [

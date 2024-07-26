@@ -1,4 +1,4 @@
-import { Kysely, sql } from "./deps.ts";
+import { Kysely, sql } from "../deps.ts";
 
 export type CreateFunctionArgs = Array<
   [string, string] | [string, string, string]
@@ -11,6 +11,7 @@ export type CreateFunctionInput = {
   declare?: string[];
   returns?: string;
   securityDefiner?: boolean;
+  schema?: string;
 };
 
 export async function createFunction(
@@ -22,8 +23,14 @@ export async function createFunction(
     name = b.toOperationNode().table.table.schema?.name ?? "public";
   });
 
+  if (input.schema) {
+    name = input.schema;
+  }
+
   const args = input.args ?? [];
-  const declare = input.declare ?? [];
+  const declare = (input.declare ?? []).map((item) => {
+    return item.endsWith(";") ? item : `${item};`;
+  });
   const returns = input.returns ?? "void";
 
   const nameWithSchema = `${name}.${input.name}`;

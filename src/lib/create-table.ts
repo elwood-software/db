@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { CreateTableBuilder, Kysely, sql } from "./deps.ts";
+import { CreateTableBuilder, Kysely, sql } from "../deps.ts";
 
 export type CreateTableBuilderFn = (
   table: CreateTableBuilder<any, any>,

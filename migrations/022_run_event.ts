@@ -1,7 +1,7 @@
-import { type Kysely, sql } from "../deps.ts";
-import { createTable } from "../create-table.ts";
+import { type Kysely, sql } from "../src/deps.ts";
+import { createTable } from "../src/lib/create-table.ts";
 
-import { TableName, ViewName } from "../constants.ts";
+import { TableName, ViewName } from "../src/constants.ts";
 
 export async function up(db: Kysely): Promise<void> {
   await createTable(db, TableName.RunEvent, (tbl) =>

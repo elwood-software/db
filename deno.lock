@@ -5,6 +5,7 @@
       "jsr:@std/dotenv": "jsr:@std/dotenv@0.224.1",
       "npm:@types/node": "npm:@types/node@18.16.19",
       "npm:kysely": "npm:kysely@0.27.3",
+      "npm:kysely@0.27.4": "npm:kysely@0.27.4",
       "npm:pg": "npm:pg@8.12.0"
     },
     "jsr": {
@@ -19,6 +20,10 @@
       },
       "kysely@0.27.3": {
         "integrity": "sha512-lG03Ru+XyOJFsjH3OMY6R/9U38IjDPfnOfDgO3ynhbDr+Dz8fak+X6L62vqu3iybQnj+lG84OttBuU9KY3L9kA==",
+        "dependencies": {}
+      },
+      "kysely@0.27.4": {
+        "integrity": "sha512-dyNKv2KRvYOQPLCAOCjjQuCk4YFd33BvGdf/o5bC7FiW+BB6snA81Zt+2wT9QDFzKqxKa5rrOmvlK/anehCcgA==",
         "dependencies": {}
       },
       "pg-cloudflare@1.1.1": {

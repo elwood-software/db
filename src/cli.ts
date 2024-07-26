@@ -34,9 +34,21 @@ console.log(`Running command: ${cmd} ${subCommand}`);
 
 try {
   switch (cmd) {
-    case "migrate":
+    case "migrate": {
       await migrate(subCommand);
       break;
+    }
+    case "seed": {
+      const seedSql = await Deno.readTextFile(
+        path.join(__dirname, "../seed.sql"),
+      );
+
+      console.log(seedSql);
+
+      await sql`${sql.raw(seedSql)}`.execute(db);
+
+      break;
+    }
     default:
       throw new Error(`unknown command: ${cmd}`);
   }
@@ -55,7 +67,7 @@ async function migrate(subCommand: string): Promise<void> {
       fs,
       path,
       // This needs to be an absolute path.
-      migrationFolder: path.join(__dirname, "./migrations"),
+      migrationFolder: path.join(__dirname, "../migrations"),
     }),
   });
 

@@ -5,7 +5,7 @@ import {
   IdentifierNode,
   OperationNode,
   sql,
-} from "./deps.ts";
+} from "../deps.ts";
 
 export class JsonValue<T> implements Expression<T> {
   #value: T;
