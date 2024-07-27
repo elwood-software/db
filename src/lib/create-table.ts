@@ -1,6 +1,8 @@
 // deno-lint-ignore-file no-explicit-any
 import { type CreateTableBuilder, type Kysely, sql } from "../deps.ts";
 
+import { createTrigger } from "./create-trigger.ts";
+
 export type CreateTableBuilderFn = (
   table: CreateTableBuilder<any, any>,
   db: Kysely,
@@ -35,7 +37,12 @@ export async function createTable(
   // build the table
   const tbl_ = builder(tbl, db);
 
-  console.log(tbl_.compile().sql);
+  const hasMetadataCol = tbl_.toOperationNode().columns.find((col) =>
+    col.column.column.name === "metadata"
+  );
+  const hasUpdatedAtCol = tbl_.toOperationNode().columns.find((col) =>
+    col.column.column.name === "updated_at"
+  );
 
   await tbl_.execute();
 
@@ -47,5 +54,33 @@ export async function createTable(
       .execute(
         db,
       );
+  }
+
+  if (hasMetadataCol) {
+    await createTrigger(db, {
+      when: "BEFORE",
+      event: ["UPDATE"],
+      table: tableName,
+      name: `set_metadata`,
+      args: [],
+      body: `
+          NEW.metadata = OLD.metadata || COALESCE(NEW.metadata, '{}');      
+          return NEW;
+      `,
+    });
+  }
+
+  if (hasUpdatedAtCol) {
+    await createTrigger(db, {
+      when: "BEFORE",
+      event: ["UPDATE"],
+      table: tableName,
+      name: `set_updated_at`,
+      args: [],
+      body: `
+          NEW.updated_at = now();
+          return NEW;
+      `,
+    });
   }
 }

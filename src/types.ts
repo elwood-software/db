@@ -60,7 +60,9 @@ export type UpdateNode = Updateable<NodeTable>;
 export type StudioPlanTable = {
   instance_id: string;
   id: Generated<string>;
-  metadata: JsonObject;
+  metadata: JsonObject & {
+    stripe_id?: string | null;
+  };
   name: string;
   description: string;
   type: StudioPlanType;
@@ -70,7 +72,7 @@ export type StudioPlanTable = {
   account_id: string;
   stripe_plan_id: string;
   created_at: ColumnType<Date, never, never>;
-  updated_at: ColumnType<Date, Date, Date>;
+  updated_at: ColumnType<Date, never, never>;
 };
 
 export type StudioPlan = Selectable<StudioPlanTable>;
@@ -84,11 +86,11 @@ export type StudioSubscriptionTable = {
   plan_id: string;
   node_id: string;
   metadata: JsonObject & {
-    stripe_id: string | null;
+    stripe_id?: string | null;
   };
   status: StudioSubscriptionStatus;
   created_at: ColumnType<Date, never, never>;
-  updated_at: ColumnType<Date, Date, Date>;
+  updated_at: ColumnType<Date, never, never>;
 };
 
 export type StudioSubscription = Selectable<StudioSubscriptionTable>;
@@ -100,10 +102,10 @@ export type StudioCustomerTable = {
   id: Generated<string>;
   user_id: string;
   metadata: JsonObject & {
-    stripe_id: string | null;
+    stripe_id?: string | null;
   };
   created_at: ColumnType<Date, never, never>;
-  updated_at: ColumnType<Date, Date, Date>;
+  updated_at: ColumnType<Date, never, never>;
 };
 
 export type StudioCustomer = Selectable<StudioCustomerTable>;
@@ -116,10 +118,10 @@ export type StudioNodePlanTable = {
   node_id: string;
   plan_id: string;
   metadata: JsonObject & {
-    stripe_id: string | null;
+    stripe_id?: string | null;
   };
   created_at: ColumnType<Date, never, never>;
-  updated_at: ColumnType<Date, Date, Date>;
+  updated_at: ColumnType<Date, never, never>;
 };
 
 export type StudioNodePlan = Selectable<StudioNodePlanTable>;
