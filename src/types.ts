@@ -20,6 +20,8 @@ import type {
 export type JsonScalar = any;
 export type JsonObject = Record<string, JsonScalar>;
 
+export type JsonOrNull<T extends JsonObject> = JsonObject & Partial<T> | null;
+
 /**
  * Elwood Schema
  */
@@ -60,17 +62,15 @@ export type UpdateNode = Updateable<NodeTable>;
 export type StudioPlanTable = {
   instance_id: string;
   id: Generated<string>;
-  metadata: JsonObject & {
-    stripe_id?: string | null;
-  };
+  metadata: JsonOrNull<{
+    stripe_id: string | null;
+  }>;
   name: string;
-  description: string;
+  description: string | null;
   type: StudioPlanType;
   status: StudioPlanStatus;
-  monthly_price: number;
-  yearly_price: number;
-  account_id: string;
-  stripe_plan_id: string;
+  monthly_price: number | null;
+  yearly_price: number | null;
   created_at: ColumnType<Date, never, never>;
   updated_at: ColumnType<Date, never, never>;
 };
@@ -85,9 +85,9 @@ export type StudioSubscriptionTable = {
   customer_id: string;
   plan_id: string;
   node_id: string;
-  metadata: JsonObject & {
+  metadata: JsonOrNull<{
     stripe_id?: string | null;
-  };
+  }>;
   status: StudioSubscriptionStatus;
   created_at: ColumnType<Date, never, never>;
   updated_at: ColumnType<Date, never, never>;
@@ -102,10 +102,10 @@ export type StudioCustomerTable = {
   id: Generated<string>;
   user_id: string;
   email: string;
-  metadata: JsonObject & {
-    name?: string | null;
-    stripe_id?: string | null;
-  };
+  metadata: JsonOrNull<{
+    name: string | null;
+    stripe_id: string | null;
+  }>;
   created_at: ColumnType<Date, never, never>;
   updated_at: ColumnType<Date, never, never>;
 };
@@ -119,9 +119,9 @@ export type StudioNodePlanTable = {
   id: Generated<string>;
   node_id: string;
   plan_id: string;
-  metadata: JsonObject & {
-    stripe_price_id?: string | null;
-  };
+  metadata: JsonOrNull<{
+    stripe_price_id: string | null;
+  }>;
   created_at: ColumnType<Date, never, never>;
   updated_at: ColumnType<Date, never, never>;
 };
