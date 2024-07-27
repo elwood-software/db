@@ -4,7 +4,7 @@
     "seed": "deno run --allow-net --allow-read --allow-write --allow-env ./src/cli.ts seed"
   },
   "name": "@elwood/db",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "exports": {
     ".": "./mod.ts",
     "./lib": "./src/lib/mod.ts",

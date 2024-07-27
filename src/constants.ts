@@ -88,6 +88,7 @@ export type StudioPlanStatus =
   | "MIGRATED";
 
 export enum StudioSubscriptionStatuses {
+  Pending = "PENDING",
   Active = "ACTIVE",
   Canceled = "CANCELED",
   Expired = "EXPIRED",

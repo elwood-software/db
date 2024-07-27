@@ -25,11 +25,6 @@ export async function up(db: Kysely): Promise<void> {
         "uuid",
         (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`),
       )
-      .addColumn(
-        "profile_id",
-        "uuid",
-        (col) => col.notNull(),
-      )
       .addColumn("name", "text", (col) => col.notNull())
       .addColumn("description", "text", (col) => col)
       .addColumn("type", sql.raw(`elwood.${TypeName.StudioPlanType}`), (col) =>
@@ -44,8 +39,6 @@ export async function up(db: Kysely): Promise<void> {
         col.notNull().defaultTo(sql`-1`))
       .addColumn("yearly_price", "numeric", (col) =>
         col.notNull().defaultTo(sql`-1`))
-      .addColumn("stripe_account_id", "text", (col) =>
-        col.notNull())
       .addColumn("metadata", "jsonb", (col) =>
         col.defaultTo(sql`'{}'`))
       .addColumn(

@@ -43,10 +43,10 @@ export type NodeTable = {
   name: string;
   type: NodeType;
   category_id: string;
-  sub_category_id: string;
-  metadata: JsonObject;
-  data: JsonObject;
-  version: number;
+  sub_category_id: string | null;
+  metadata: JsonObject | null;
+  data: JsonObject | null;
+  version: number | null;
   publish_at: ColumnType<Date | null, Date | null, Date | null>;
   unpublish_at: ColumnType<Date | null, Date | null, Date | null>;
   created_at: ColumnType<Date, never, never>;
@@ -101,7 +101,9 @@ export type StudioCustomerTable = {
   instance_id: string;
   id: Generated<string>;
   user_id: string;
+  email: string;
   metadata: JsonObject & {
+    name?: string | null;
     stripe_id?: string | null;
   };
   created_at: ColumnType<Date, never, never>;
@@ -118,7 +120,7 @@ export type StudioNodePlanTable = {
   node_id: string;
   plan_id: string;
   metadata: JsonObject & {
-    stripe_id?: string | null;
+    stripe_price_id?: string | null;
   };
   created_at: ColumnType<Date, never, never>;
   updated_at: ColumnType<Date, never, never>;

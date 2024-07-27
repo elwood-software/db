@@ -5,6 +5,7 @@ import { TableName, TypeName } from "../src/constants.ts";
 
 export async function up(db: Kysely): Promise<void> {
   await db.schema.createType(TypeName.StudioSubscriptionStatus).asEnum([
+    "PENDING",
     "ACTIVE",
     "CANCELED",
     "EXPIRED",
