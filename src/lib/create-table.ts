@@ -1,5 +1,5 @@
 // deno-lint-ignore-file no-explicit-any
-import { CreateTableBuilder, Kysely, sql } from "../deps.ts";
+import { type CreateTableBuilder, type Kysely, sql } from "../deps.ts";
 
 export type CreateTableBuilderFn = (
   table: CreateTableBuilder<any, any>,
@@ -33,7 +33,11 @@ export async function createTable(
   }
 
   // build the table
-  await builder(tbl, db).execute();
+  const tbl_ = builder(tbl, db);
+
+  console.log(tbl_.compile().sql);
+
+  await tbl_.execute();
 
   // add rls
   if (options.addRls !== false) {

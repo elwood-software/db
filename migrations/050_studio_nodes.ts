@@ -96,6 +96,8 @@ export async function up(db: Kysely): Promise<void> {
         _table_name
       );
 
+
+
       -- search for episodes that are in the show
       -- which is the parent of the feed
       FOR _row IN (

@@ -4,7 +4,7 @@ import { createTable } from "../src/lib/create-table.ts";
 import { TableName } from "../src/constants.ts";
 
 export async function up(db: Kysely): Promise<void> {
-  await createTable(db, TableName.StudioProfile, (tbl) =>
+  await createTable(db, TableName.StudioCustomer, (tbl) =>
     tbl
       .addColumn(
         "id",

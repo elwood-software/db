@@ -19,10 +19,11 @@ export async function up(db: Kysely): Promise<void> {
         (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`),
       )
       .addColumn(
-        "profile_id",
+        "customer_id",
         "uuid",
         (col) => col.notNull(),
       )
+      .addColumn("stripe_account_id", "text", (col) => col.notNull())
       .addColumn("metadata", "jsonb", (col) => col.defaultTo(sql`'{}'`))
       .addColumn("plan_id", "uuid", (col) => col.notNull())
       .addColumn(
@@ -31,9 +32,10 @@ export async function up(db: Kysely): Promise<void> {
         (col) => col.notNull().defaultTo(sql`'HOLD'`),
       )
       .addColumn("node_id", "uuid", (col) => col.notNull())
-      .addUniqueConstraint("studio_subscription_instance_profile_id__idx", [
+      .addUniqueConstraint("studio_subscription_instance_customer_id__idx", [
         "instance_id",
-        "profile_id",
+        "customer_id",
+        "node_id",
       ])
       .addForeignKeyConstraint(
         "studio_subscription_node_id_fkey",
@@ -42,9 +44,9 @@ export async function up(db: Kysely): Promise<void> {
         ["id"],
       )
       .addForeignKeyConstraint(
-        "studio_subscription_profile_id_fkey",
-        ["profile_id"],
-        TableName.StudioProfile,
+        "studio_subscription_customer_id_fkey",
+        ["customer_id"],
+        TableName.StudioCustomer,
         ["id"],
       )
       .addForeignKeyConstraint(
