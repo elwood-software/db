@@ -12,7 +12,8 @@ export async function up(db: Kysely): Promise<void> {
         (col) => col.primaryKey().defaultTo(sql`uuid_generate_v4()`),
       )
       .addColumn("user_id", "uuid", (col) => col.notNull())
-      .addColumn("metadata", "jsonb", (col) => col.defaultTo(sql`'{}'`)));
+      .addColumn("metadata", "jsonb", (col) => col.defaultTo(sql`'{}'`))
+      .addColumn("stripe_customer_id", "text", (col) => col));
 }
 
 export async function down(db: Kysely): Promise<void> {

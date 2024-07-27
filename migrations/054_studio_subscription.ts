@@ -23,7 +23,6 @@ export async function up(db: Kysely): Promise<void> {
         "uuid",
         (col) => col.notNull(),
       )
-      .addColumn("stripe_account_id", "text", (col) => col.notNull())
       .addColumn("metadata", "jsonb", (col) => col.defaultTo(sql`'{}'`))
       .addColumn("plan_id", "uuid", (col) => col.notNull())
       .addColumn(

@@ -30,7 +30,6 @@ export async function up(db: Kysely): Promise<void> {
         "uuid",
         (col) => col.notNull(),
       )
-      .addColumn("metadata", "jsonb", (col) => col.defaultTo(sql`'{}'`))
       .addColumn("name", "text", (col) => col.notNull())
       .addColumn("description", "text", (col) => col)
       .addColumn("type", sql.raw(`elwood.${TypeName.StudioPlanType}`), (col) =>
@@ -47,8 +46,8 @@ export async function up(db: Kysely): Promise<void> {
         col.notNull().defaultTo(sql`-1`))
       .addColumn("stripe_account_id", "text", (col) =>
         col.notNull())
-      .addColumn("stripe_plan_id", "text", (col) =>
-        col)
+      .addColumn("metadata", "jsonb", (col) =>
+        col.defaultTo(sql`'{}'`))
       .addColumn(
         "created_at",
         "timestamp",

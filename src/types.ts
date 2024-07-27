@@ -80,9 +80,12 @@ export type UpdateStudioPlan = Updateable<StudioPlanTable>;
 export type StudioSubscriptionTable = {
   instance_id: string;
   id: Generated<string>;
-  account_id: string;
+  customer_id: string;
   plan_id: string;
   node_id: string;
+  metadata: JsonObject & {
+    stripe_id: string | null;
+  };
   status: StudioSubscriptionStatus;
   created_at: ColumnType<Date, never, never>;
   updated_at: ColumnType<Date, Date, Date>;
@@ -96,7 +99,9 @@ export type StudioCustomerTable = {
   instance_id: string;
   id: Generated<string>;
   user_id: string;
-  metadata: JsonObject;
+  metadata: JsonObject & {
+    stripe_id: string | null;
+  };
   created_at: ColumnType<Date, never, never>;
   updated_at: ColumnType<Date, Date, Date>;
 };
@@ -110,6 +115,9 @@ export type StudioNodePlanTable = {
   id: Generated<string>;
   node_id: string;
   plan_id: string;
+  metadata: JsonObject & {
+    stripe_id: string | null;
+  };
   created_at: ColumnType<Date, never, never>;
   updated_at: ColumnType<Date, Date, Date>;
 };
