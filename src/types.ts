@@ -34,6 +34,7 @@ export type ElwoodDatabaseTables = {
   studio_subscription: StudioSubscriptionTable;
   studio_customer: StudioCustomerTable;
   studio_node_plan: StudioNodePlanTable;
+  studio_webhook: StudioWebhookTable;
 };
 
 export type NodeTable = {
@@ -67,11 +68,14 @@ export type StudioPlanTable = {
   name: string;
   description: string | null;
   status: StudioPlanStatus;
-  prices: Array<
-    JsonObject & {
-      stripe_id?: string;
-    }
-  >[] | null;
+  prices:
+    | Array<
+      JsonObject & {
+        id: string;
+        stripe_id?: string;
+      }
+    >
+    | null;
   created_at: ColumnType<Date, never, never>;
   updated_at: ColumnType<Date, never, never>;
 };
@@ -144,7 +148,6 @@ export type StudioWebhookTable = {
 
 export type StudioWebhook = Selectable<StudioWebhookTable>;
 export type NewStudioWebhook = Insertable<StudioWebhookTable>;
-export type UpdateStudioWebhook = Updateable<StudioWebhookTable>;
 
 /**
  * Public Schema
