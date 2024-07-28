@@ -38,7 +38,7 @@ export type ElwoodDatabaseTables = {
 };
 
 export type NodeTable = {
-  instance_id: string;
+  instance_id: ColumnType<string | null, never, never>;
   id: Generated<string>;
   parent_id: string | null;
   status: NodeStatus;
@@ -60,7 +60,7 @@ export type NewNode = Insertable<NodeTable>;
 export type UpdateNode = Updateable<NodeTable>;
 
 export type StudioPlanTable = {
-  instance_id: string;
+  instance_id: ColumnType<string | null, never, never>;
   id: Generated<string>;
   metadata: JsonOrNull<{
     stripe_id: string | null;
@@ -85,7 +85,7 @@ export type NewStudioPlan = Insertable<StudioPlanTable>;
 export type UpdateStudioPlan = Updateable<StudioPlanTable>;
 
 export type StudioSubscriptionTable = {
-  instance_id: string;
+  instance_id: ColumnType<string | null, never, never>;
   id: Generated<string>;
   customer_id: string;
   plan_id: string;
@@ -103,7 +103,7 @@ export type NewStudioSubscription = Insertable<StudioSubscriptionTable>;
 export type UpdateStudioSubscription = Updateable<StudioSubscriptionTable>;
 
 export type StudioCustomerTable = {
-  instance_id: string;
+  instance_id: ColumnType<string | null, never, never>;
   id: Generated<string>;
   user_id: string;
   email: string;
@@ -120,7 +120,7 @@ export type NewStudioCustomer = Insertable<StudioCustomerTable>;
 export type UpdateStudioCustomer = Updateable<StudioCustomerTable>;
 
 export type StudioNodePlanTable = {
-  instance_id: string;
+  instance_id: ColumnType<string | null, never, never>;
   id: Generated<string>;
   node_id: string;
   plan_id: string;
@@ -136,7 +136,6 @@ export type NewStudioNodePlan = Insertable<StudioNodePlanTable>;
 export type UpdateStudioNodePlan = Updateable<StudioNodePlanTable>;
 
 export type StudioWebhookTable = {
-  instance_id: string;
   id: Generated<string>;
   reference_id: string;
   source: string;

@@ -32,7 +32,7 @@ export async function up(db: Kysely): Promise<void> {
         "created_at",
         "timestamp",
         (col) => col.defaultTo(sql`now()`),
-      ));
+      ), { addInstanceId: false });
 }
 
 export async function down(db: Kysely): Promise<void> {

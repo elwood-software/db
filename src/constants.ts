@@ -83,6 +83,7 @@ export enum StudioSubscriptionStatuses {
 }
 
 export type StudioSubscriptionStatus =
+  | "PENDING"
   | "ACTIVE"
   | "CANCELED"
   | "EXPIRED"
