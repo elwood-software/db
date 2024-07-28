@@ -11,7 +11,6 @@ import type {
   NodeStatus,
   NodeType,
   StudioPlanStatus,
-  StudioPlanType,
   StudioSubscriptionStatus,
   StudioWebhookDirection,
 } from "./constants.ts";
@@ -67,10 +66,12 @@ export type StudioPlanTable = {
   }>;
   name: string;
   description: string | null;
-  type: StudioPlanType;
   status: StudioPlanStatus;
-  monthly_price: number | null;
-  yearly_price: number | null;
+  prices: Array<
+    JsonObject & {
+      stripe_id?: string;
+    }
+  >[] | null;
   created_at: ColumnType<Date, never, never>;
   updated_at: ColumnType<Date, never, never>;
 };

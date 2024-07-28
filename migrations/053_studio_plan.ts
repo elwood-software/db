@@ -4,13 +4,6 @@ import { createTable } from "../src/lib/create-table.ts";
 import { TableName, TypeName } from "../src/constants.ts";
 
 export async function up(db: Kysely): Promise<void> {
-  await db.schema.createType(TypeName.StudioPlanType).asEnum([
-    "RECURRING",
-    "ONE_TIME",
-    "LIFETIME",
-    "FREE",
-  ]).execute();
-
   await db.schema.createType(TypeName.StudioPlanStatus).asEnum([
     "ACTIVE",
     "EXPIRED",
@@ -27,18 +20,13 @@ export async function up(db: Kysely): Promise<void> {
       )
       .addColumn("name", "text", (col) => col.notNull())
       .addColumn("description", "text", (col) => col)
-      .addColumn("type", sql.raw(`elwood.${TypeName.StudioPlanType}`), (col) =>
-        col.notNull().defaultTo("RECURRING"))
       .addColumn(
         "status",
         sql.raw(`elwood.${TypeName.StudioPlanStatus}`),
-        (col) =>
-          col.notNull().defaultTo("ACTIVE"),
+        (col) => col.notNull().defaultTo("ACTIVE"),
       )
-      .addColumn("monthly_price", "numeric", (col) =>
-        col.notNull().defaultTo(sql`-1`))
-      .addColumn("yearly_price", "numeric", (col) =>
-        col.notNull().defaultTo(sql`-1`))
+      .addColumn("prices", sql`jsonb[]`, (col) =>
+        col.notNull().defaultTo(sql`ARRAY[]::jsonb[]`))
       .addColumn("metadata", "jsonb", (col) =>
         col.defaultTo(sql`'{}'`))
       .addColumn(

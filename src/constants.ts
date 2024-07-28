@@ -61,19 +61,6 @@ export type NodeStatus =
   | "DRAFT"
   | "UNLISTED";
 
-export enum StudioPlanTypes {
-  Recurring = "RECURRING",
-  OneTime = "ONE_TIME",
-  Lifetime = "LIFETIME",
-  Free = "FREE",
-}
-
-export type StudioPlanType =
-  | "RECURRING"
-  | "ONE_TIME"
-  | "LIFETIME"
-  | "FREE";
-
 export enum StudioPlanStatuses {
   Active = "ACTIVE",
   Expired = "EXPIRED",
