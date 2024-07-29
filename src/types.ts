@@ -1,9 +1,9 @@
+import type { Kysely } from "npm:kysely";
 import type {
   ColumnType,
   Generated,
   Insertable,
-  Kysely,
-  QueryCreator as KQueryCreator,
+  QueryCreator,
   Selectable,
   Updateable,
 } from "./deps.ts";
@@ -14,6 +14,7 @@ import type {
   StudioSubscriptionStatus,
   StudioWebhookDirection,
 } from "./constants.ts";
+import { TupleNode } from "kysely";
 
 // deno-lint-ignore no-explicit-any
 export type JsonScalar = any;
@@ -26,7 +27,7 @@ export type JsonOrNull<T extends JsonObject> = JsonObject & Partial<T> | null;
  */
 
 export type ElwoodDatabase = Kysely<ElwoodDatabaseTables>;
-export type ElwoodQueryCreator = KQueryCreator<ElwoodDatabaseTables>;
+export type ElwoodQueryCreator = QueryCreator<ElwoodDatabaseTables>;
 
 export type ElwoodDatabaseTables = {
   node: NodeTable;
@@ -46,13 +47,14 @@ export type NodeTable = {
   type: NodeType;
   category_id: string;
   sub_category_id: string | null;
+  other_categories: string[];
   metadata: JsonObject | null;
   data: JsonObject | null;
   version: number | null;
   publish_at: ColumnType<Date | null, Date | null, Date | null>;
   unpublish_at: ColumnType<Date | null, Date | null, Date | null>;
   created_at: ColumnType<Date, never, never>;
-  updated_at: ColumnType<Date, Date, Date>;
+  updated_at: ColumnType<Date, never, never>;
 };
 
 export type Node = Selectable<NodeTable>;
@@ -148,18 +150,29 @@ export type StudioWebhookTable = {
 export type StudioWebhook = Selectable<StudioWebhookTable>;
 export type NewStudioWebhook = Insertable<StudioWebhookTable>;
 
+export type StudioNodeTable = Node & {
+  category: string;
+  sub_category: string | null;
+  content: JsonObject & {
+    __elwood_node_id: string;
+    __elwood_node_name: string;
+  };
+};
+
+export type StudioNode = Selectable<StudioNodeTable>;
+
 /**
  * Public Schema
  */
 
 export type PublicDatabase = Kysely<PublicTables>;
-export type PublicQueryCreator = KQueryCreator<PublicTables>;
+export type PublicQueryCreator = QueryCreator<PublicTables>;
 
 export type PublicTables = {
-  elwood_studio_node: StudioNodeTable;
+  elwood_studio_content: StudioContentTable;
 };
 
-export type StudioNodeTable = {
+export type StudioContentTable = {
   id: string;
   name: string;
   parent_id: string | null;
@@ -173,4 +186,4 @@ export type StudioNodeTable = {
   };
 };
 
-export type StudioNode = Selectable<StudioNodeTable>;
+export type StudioContent = Selectable<StudioContentTable>;

@@ -1,9 +1,9 @@
-import { type Kysely, sql } from "../src/deps.ts";
-import { createTable } from "../src/lib/create-table.ts";
-import { createFunction } from "../src/lib/create-function.ts";
-import { TableName, TypeName } from "../src/constants.ts";
+import { type Kysely, sql } from "@/deps.ts";
+import { createTable } from "@/lib/create-table.ts";
+import { createFunction } from "@/lib/create-function.ts";
+import { TableName, TypeName } from "@/constants.ts";
 
-export async function up(db: Kysely): Promise<void> {
+export async function up(db: Kysely<any>): Promise<void> {
   await db.schema.createType(TypeName.NodeType).asEnum([
     "REPOSITORY",
     "TREE",
@@ -41,8 +41,12 @@ export async function up(db: Kysely): Promise<void> {
       )
       .addColumn("category_id", `uuid`, (col) => col.notNull())
       .addColumn("sub_category_id", `uuid`, (col) => col)
-      .addColumn("metadata", "jsonb", (col) => col.defaultTo(sql`'{}'`))
-      .addColumn("data", "jsonb", (col) => col.defaultTo(sql`'{}'`))
+      .addColumn("other_category_ids", sql`uuid[]`, (col) =>
+        col.notNull().defaultTo(sql`ARRAY[]::uuid[]`))
+      .addColumn("metadata", "jsonb", (col) =>
+        col.defaultTo(sql`'{}'`))
+      .addColumn("data", "jsonb", (col) =>
+        col.defaultTo(sql`'{}'`))
       .addColumn("version", "integer", (col) => col.defaultTo(0))
       .addColumn("publish_at", "timestamptz")
       .addColumn("unpublish_at", "timestamptz")
@@ -103,6 +107,8 @@ export async function up(db: Kysely): Promise<void> {
       "_data jsonb := '{}'",
       "_category_id uuid",
       "_sub_category_id uuid",
+      "_other_category_ids uuid[] := ARRAY[]::uuid[]",
+      "_other_category_name varchar",
       "_parent_id uuid",
       "_type elwood.node_type := 'TREE'",
       "_status elwood.node_status := 'INACTIVE'",
@@ -131,6 +137,12 @@ export async function up(db: Kysely): Promise<void> {
 
       IF p_node->>'category' IS NOT NULL THEN
         _category_id = elwood.node_category_id(p_node->>'category'::varchar);
+      END IF;
+
+      IF p_node->>'other_categories' IS NOT NULL THEN
+        FOR _other_category_name IN (SELECT jsonb_array_elements_text(p_node->'other_categories')) LOOP
+          _other_category_ids = _other_category_ids || elwood.node_category_id(_other_category_name);
+        END LOOP;
       END IF;
 
       IF p_node->>'sub_category' IS NOT NULL THEN
@@ -171,6 +183,7 @@ export async function up(db: Kysely): Promise<void> {
         "name",
         "category_id",
         "sub_category_id",
+        "other_category_ids",
         "parent_id",
         "type",
         "metadata",
@@ -183,6 +196,7 @@ export async function up(db: Kysely): Promise<void> {
         CAST(p_node->>'name' as text),
         _category_id,
         _sub_category_id,
+        _other_category_ids,
         _parent_id,
         _type,
         _metadata,
@@ -194,6 +208,7 @@ export async function up(db: Kysely): Promise<void> {
         ON CONFLICT ("instance_id", "name")
         DO UPDATE SET
           "category_id" = _category_id,
+          "other_category_ids" = _other_category_ids,
           "parent_id" = _parent_id,
           "type" = _type,
           "metadata" = _metadata,
@@ -207,9 +222,32 @@ export async function up(db: Kysely): Promise<void> {
       return elwood.node_to_json(_node_id);
     `,
   });
+
+  await createFunction(db, {
+    name: "get_node_content",
+    args: [["p_node", "elwood.node"]],
+    returns: "jsonb",
+    declare: [
+      `_target elwood.node := p_node`,
+    ],
+    body: `
+      IF CAST(p_node.type AS elwood.node_type) = 'SYMLINK' THEN
+        SELECT * INTO _target FROM elwood.node WHERE id = p_node.data->'target_node_id'::uuid;
+      END IF;
+
+      IF _target IS NULL THEN 
+        return null;
+      END IF;
+
+      return jsonb_build_object(
+        '__elwood_node_id', _target.id,
+        '__elwood_node_name', _target.name
+      ) || to_jsonb(_target)->'data';
+    `,
+  });
 }
 
-export async function down(db: Kysely): Promise<void> {
+export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable(TableName.Node).execute();
   await db.schema.dropType(TypeName.NodeType).execute();
 }

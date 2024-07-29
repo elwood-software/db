@@ -22,7 +22,8 @@ export enum ViewName {
   StudioProfile = "elwood_run_profile",
   StudioSubscription = "elwood_studio_subscription",
   StudioPlan = "elwood_studio_plan",
-  StudioNode = "elwood_studio_node",
+  StudioNode = "studio_node",
+  StudioContent = "elwood_studio_content",
 }
 
 export enum TypeName {

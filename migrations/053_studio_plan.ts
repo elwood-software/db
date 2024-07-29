@@ -1,9 +1,9 @@
-import { type Kysely, sql } from "../src/deps.ts";
-import { createTable } from "../src/lib/create-table.ts";
+import { type Kysely, sql } from "@/deps.ts";
+import { createTable } from "@/lib/create-table.ts";
 
-import { TableName, TypeName } from "../src/constants.ts";
+import { TableName, TypeName } from "@/constants.ts";
 
-export async function up(db: Kysely): Promise<void> {
+export async function up(db: Kysely<any>): Promise<void> {
   await db.schema.createType(TypeName.StudioPlanStatus).asEnum([
     "ACTIVE",
     "EXPIRED",
@@ -76,7 +76,7 @@ export async function up(db: Kysely): Promise<void> {
       ]));
 }
 
-export async function down(db: Kysely): Promise<void> {
+export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable(TableName.StudioPlan).execute();
   await db.schema.dropTable(TableName.StudioNodePlan).execute();
 }

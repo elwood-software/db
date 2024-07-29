@@ -1,7 +1,7 @@
-import { type Kysely, sql } from "../src/deps.ts";
-import { createTable } from "../src/lib/create-table.ts";
-import { createFunction } from "../src/lib/create-function.ts";
-import { TableName } from "../src/constants.ts";
+import { type Kysely, sql } from "@/deps.ts";
+import { createTable } from "@/lib/create-table.ts";
+import { createFunction } from "@/lib/create-function.ts";
+import { TableName } from "@/constants.ts";
 
 const standardCategories = [
   ["PROJECT", "Project"],
@@ -23,9 +23,11 @@ const standardCategories = [
   ["SRC_PROXY", "Proxy Source"],
   ["FULL", "Full"],
   ["CLIP", "Clip"],
+  ["PAID", "Paid"],
+  ["FREE", "Free"],
 ];
 
-export async function up(db: Kysely): Promise<void> {
+export async function up(db: Kysely<any>): Promise<void> {
   await createTable(db, TableName.NodeCategory, (tbl) =>
     tbl
       .addColumn(
@@ -87,6 +89,6 @@ export async function up(db: Kysely): Promise<void> {
   });
 }
 
-export async function down(db: Kysely): Promise<void> {
+export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable(TableName.NodeCategory).execute();
 }

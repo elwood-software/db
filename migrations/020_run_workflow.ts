@@ -1,10 +1,10 @@
-import { type Kysely, sql } from "../src/deps.ts";
-import { createTable } from "../src/lib/create-table.ts";
-import { createFunction } from "../src/lib/create-function.ts";
+import { type Kysely, sql } from "@/deps.ts";
+import { createTable } from "@/lib/create-table.ts";
+import { createFunction } from "@/lib/create-function.ts";
 
-import { TableName, ViewName } from "../src/constants.ts";
+import { TableName, ViewName } from "@/constants.ts";
 
-export async function up(db: Kysely): Promise<void> {
+export async function up(db: Kysely<any>): Promise<void> {
   // run
   await createTable(db, TableName.RunWorkflow, (tbl) =>
     tbl
@@ -92,7 +92,7 @@ export async function up(db: Kysely): Promise<void> {
   `.execute(db);
 }
 
-export async function down(db: Kysely): Promise<void> {
+export async function down(db: Kysely<any>): Promise<void> {
   await db.schema.dropTable(TableName.RunWorkflow).cascade().execute();
   await db.schema.dropView(ViewName.RunWorkflow).execute();
 }

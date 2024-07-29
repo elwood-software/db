@@ -1,5 +1,3 @@
-import type { Kysely as K } from "npm:kysely@0.27.4";
-
 export {
   AliasNode,
   AlterTableBuilder,
@@ -21,6 +19,4 @@ export type {
 } from "npm:kysely@0.27.4";
 
 export { jsonObjectFrom } from "npm:kysely@0.27.4/helpers/postgres";
-
-// deno-lint-ignore no-explicit-any -- intentionally using any
-export type Kysely<D = any> = K<D>;
+export { Kysely } from "kysely";
