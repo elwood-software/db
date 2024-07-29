@@ -1,11 +1,11 @@
 // deno-lint-ignore-file no-explicit-any
-import { type CreateTableBuilder, type Kysely, sql } from "../deps.ts";
+import { type AnyKysely, type CreateTableBuilder, sql } from "@/deps.ts";
 
-import { createTrigger } from "./create-trigger.ts";
+import { createTrigger } from "@/lib/create-trigger.ts";
 
 export type CreateTableBuilderFn = (
   table: CreateTableBuilder<any, any>,
-  db: Kysely,
+  db: AnyKysely,
 ) => CreateTableBuilder<any, any>;
 
 export type CreateTableOptions = {
@@ -14,7 +14,7 @@ export type CreateTableOptions = {
 };
 
 export async function createTable(
-  db: Kysely,
+  db: AnyKysely,
   tableName: string,
   builder: CreateTableBuilderFn,
   options: CreateTableOptions = {},

@@ -1,9 +1,9 @@
-import { type Kysely, sql } from "@/deps.ts";
+import { type AnyKysely, sql } from "@/deps.ts";
 import { createTable } from "@/lib/create-table.ts";
 import { createFunction } from "@/lib/create-function.ts";
 import { TableName, ViewName } from "@/constants.ts";
 
-export async function up(db: Kysely<any>): Promise<void> {
+export async function up(db: AnyKysely): Promise<void> {
   // run
   await createTable(db, TableName.Member, (tbl) =>
     tbl
@@ -87,6 +87,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     `.execute(db);
 }
 
-export async function down(db: Kysely<any>): Promise<void> {
+export async function down(db: AnyKysely): Promise<void> {
   await db.schema.dropTable(TableName.Member).execute();
 }

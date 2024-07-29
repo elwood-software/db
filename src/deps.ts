@@ -1,3 +1,5 @@
+import type { Kysely } from "kysely";
+
 export {
   AliasNode,
   AlterTableBuilder,
@@ -6,7 +8,7 @@ export {
   IdentifierNode,
   QueryCreator,
   sql,
-} from "npm:kysely@0.27.4";
+} from "kysely";
 export type {
   AliasedExpression,
   ColumnType,
@@ -16,7 +18,10 @@ export type {
   OperationNode,
   Selectable,
   Updateable,
-} from "npm:kysely@0.27.4";
+} from "kysely";
 
-export { jsonObjectFrom } from "npm:kysely@0.27.4/helpers/postgres";
+export { jsonObjectFrom } from "kysely/helpers/postgres";
 export { Kysely } from "kysely";
+
+// deno-lint-ignore no-explicit-any -- intentional
+export type AnyKysely = Kysely<any>;

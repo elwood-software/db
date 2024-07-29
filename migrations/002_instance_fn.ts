@@ -1,7 +1,7 @@
-import { type Kysely, sql } from "@/deps.ts";
+import { type AnyKysely, sql } from "@/deps.ts";
 import { createFunction } from "@/lib/create-function.ts";
 
-export async function up(db: Kysely<any>): Promise<void> {
+export async function up(db: AnyKysely): Promise<void> {
   await createFunction(db, {
     name: "current_instance_id",
     returns: "uuid",
@@ -20,7 +20,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   });
 }
 
-export async function down(db: Kysely<any>): Promise<void> {
+export async function down(db: AnyKysely): Promise<void> {
   await sql`DROP FUNCTION IF EXISTS elwood.current_instance_id() CASCADE`
     .execute(db);
 }

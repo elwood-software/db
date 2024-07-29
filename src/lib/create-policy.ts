@@ -1,5 +1,5 @@
-import { Kysely, sql } from "../deps.ts";
-import { getSchemaName } from "./get-schema-name.ts";
+import { AnyKysely, sql } from "@/deps.ts";
+import { getSchemaName } from "@/lib/get-schema-name.ts";
 
 export type CreatePolicyOptions = {
   name: string;
@@ -11,7 +11,10 @@ export type CreatePolicyOptions = {
   check?: string;
 };
 
-export async function createPolicy(db: Kysely, options: CreatePolicyOptions) {
+export async function createPolicy(
+  db: AnyKysely,
+  options: CreatePolicyOptions,
+) {
   const schema = getSchemaName(db);
   const { tableName, as = "PERMISSIVE", roles, using = "(true)" } = options;
   const for_ = (options.for ?? "ALL") === "ALL"

@@ -1,11 +1,11 @@
 import {
-  AliasedExpression,
+  type AliasedExpression,
   AliasNode,
-  Expression,
+  type Expression,
   IdentifierNode,
-  OperationNode,
+  type OperationNode,
   sql,
-} from "../deps.ts";
+} from "@/deps.ts";
 
 export class JsonValue<T> implements Expression<T> {
   #value: T;

@@ -1,8 +1,8 @@
-import { CreateViewBuilder, Kysely, sql } from "../deps.ts";
+import { type AnyKysely, type CreateViewBuilder, sql } from "@/deps.ts";
 
 export type CreateViewBuilderFn = (
   table: CreateViewBuilder,
-  db: Kysely,
+  db: AnyKysely,
 ) => CreateViewBuilder;
 
 export type CreateViewOptions = {
@@ -10,7 +10,7 @@ export type CreateViewOptions = {
 };
 
 export async function createView(
-  db: Kysely,
+  db: AnyKysely,
   viewName: string,
   builder: CreateViewBuilderFn,
   options: CreateViewOptions = {},

@@ -1,8 +1,8 @@
-import { Kysely, sql } from "../deps.ts";
+import { type AnyKysely, sql } from "@/deps.ts";
 
-import type { CreateFunctionInput } from "./create-function.ts";
-import { createFunction } from "./create-function.ts";
-import { getSchemaName } from "./get-schema-name.ts";
+import type { CreateFunctionInput } from "@/lib/create-function.ts";
+import { createFunction } from "@/lib/create-function.ts";
+import { getSchemaName } from "@/lib/get-schema-name.ts";
 
 export type CreateTriggerInput = CreateFunctionInput & {
   table: string;
@@ -10,7 +10,7 @@ export type CreateTriggerInput = CreateFunctionInput & {
   when: "BEFORE" | "AFTER";
 };
 
-export async function createTrigger(db: Kysely, input: CreateTriggerInput) {
+export async function createTrigger(db: AnyKysely, input: CreateTriggerInput) {
   const { event, when, table, name, ...fnInput } = input;
   const schema = getSchemaName(db, input.schema);
 

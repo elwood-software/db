@@ -14,7 +14,6 @@ import type {
   StudioSubscriptionStatus,
   StudioWebhookDirection,
 } from "./constants.ts";
-import { TupleNode } from "kysely";
 
 // deno-lint-ignore no-explicit-any
 export type JsonScalar = any;
@@ -47,7 +46,7 @@ export type NodeTable = {
   type: NodeType;
   category_id: string;
   sub_category_id: string | null;
-  other_categories: string[];
+  other_category_ids: string[] | null;
   metadata: JsonObject | null;
   data: JsonObject | null;
   version: number | null;

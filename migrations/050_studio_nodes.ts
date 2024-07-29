@@ -1,8 +1,7 @@
-import { type Kysely, sql } from "@/deps.ts";
-import { createFunction } from "@/lib/create-function.ts";
+import { type AnyKysely, sql } from "@/deps.ts";
 import { TableName, ViewName } from "@/constants.ts";
 
-export async function up(db: Kysely<any>): Promise<void> {
+export async function up(db: AnyKysely): Promise<void> {
   await db.withSchema("elwood").schema
     .createView(ViewName.StudioNode)
     .orReplace()
@@ -95,6 +94,6 @@ export async function up(db: Kysely<any>): Promise<void> {
     .execute();
 }
 
-export async function down(db: Kysely<any>): Promise<void> {
+export async function down(db: AnyKysely): Promise<void> {
   await db.schema.dropView(ViewName.StudioNode).execute();
 }

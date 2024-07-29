@@ -1,4 +1,4 @@
-import { Kysely, sql } from "../deps.ts";
+import { type AnyKysely, sql } from "@/deps.ts";
 
 export type CreateFunctionArgs = Array<
   [string, string] | [string, string, string]
@@ -15,7 +15,7 @@ export type CreateFunctionInput = {
 };
 
 export async function createFunction(
-  db: Kysely,
+  db: AnyKysely,
   input: CreateFunctionInput,
 ): Promise<void> {
   let name = "public";

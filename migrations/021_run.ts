@@ -1,11 +1,11 @@
-import { type Kysely, sql } from "@/deps.ts";
+import { type AnyKysely, sql } from "@/deps.ts";
 import { createTable } from "@/lib/create-table.ts";
 import { createFunction } from "@/lib/create-function.ts";
 import { JsonValue } from "@/lib/json.ts";
 
 import { TableName, ViewName } from "@/constants.ts";
 
-export async function up(db: Kysely<any>): Promise<void> {
+export async function up(db: AnyKysely): Promise<void> {
   // run
   await createTable(db, TableName.Run, (tbl) =>
     tbl
@@ -161,7 +161,7 @@ export async function up(db: Kysely<any>): Promise<void> {
   } SET  (security_invoker=on);`.execute(db);
 }
 
-export async function down(db: Kysely<any>): Promise<void> {
+export async function down(db: AnyKysely): Promise<void> {
   await db.schema.dropTable(TableName.Run).cascade().execute();
   await db.schema.dropView(ViewName.Run).execute();
 }
