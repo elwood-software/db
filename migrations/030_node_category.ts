@@ -4,6 +4,7 @@ import { createFunction } from "@/lib/create-function.ts";
 import { TableName } from "@/constants.ts";
 
 const standardCategories = [
+  ["UNKNOWN", "Unknown"],
   ["PROJECT", "Project"],
   ["FILE", "File"],
   ["FOLDER", "Folder"],
@@ -23,8 +24,8 @@ const standardCategories = [
   ["SRC_PROXY", "Proxy Source"],
   ["FULL", "Full"],
   ["CLIP", "Clip"],
-  ["PAID", "Paid"],
-  ["FREE", "Free"],
+  ["PUBLIC", "Public"],
+  ["PRIVATE", "Private"],
 ];
 
 export async function up(db: AnyKysely): Promise<void> {

@@ -232,7 +232,7 @@ export async function up(db: AnyKysely): Promise<void> {
     ],
     body: `
       IF CAST(p_node.type AS elwood.node_type) = 'SYMLINK' THEN
-        SELECT * INTO _target FROM elwood.node WHERE id = p_node.data->'target_node_id'::uuid;
+        SELECT * INTO _target FROM elwood.node WHERE id = CAST(p_node.data->>'target_node_id' AS uuid);
       END IF;
 
       IF _target IS NULL THEN 
