@@ -1,4 +1,4 @@
-import type { Kysely } from "npm:kysely";
+import type { Kysely } from "@/deps.ts";
 import type {
   ColumnType,
   Generated,
