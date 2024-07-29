@@ -35,6 +35,7 @@ export type ElwoodDatabaseTables = {
   studio_customer: StudioCustomerTable;
   studio_node_plan: StudioNodePlanTable;
   studio_webhook: StudioWebhookTable;
+  studio_node: StudioNodeTable;
 };
 
 export type NodeTable = {
