@@ -224,19 +224,25 @@ export async function up(db: AnyKysely): Promise<void> {
   });
 
   await createFunction(db, {
-    name: "get_node_content",
-    args: [["p_node", "elwood.node"]],
+    name: "node_content",
+    args: [["p_parent_node_id", "uuid"]],
     returns: "jsonb",
     declare: [
-      `_target elwood.node := p_node`,
+      `_target elwood.node`,
     ],
     body: `
-      IF CAST(p_node.type AS elwood.node_type) = 'SYMLINK' THEN
-        SELECT * INTO _target FROM elwood.node WHERE id = CAST(p_node.data->>'target_node_id' AS uuid);
-      END IF;
+      SELECT * INTO _target FROM elwood.node WHERE 
+        parent_id = p_parent_node_id 
+        AND category_id = elwood.node_category_id('CONTENT')
+        AND status = 'ACTIVE'::elwood.node_status
+      ;
 
       IF _target IS NULL THEN 
         return null;
+      END IF;
+
+      IF CAST(_target.type AS elwood.node_type) = 'SYMLINK' THEN
+        return elwood.node_content(CAST(_target.data->>'target_node_id' as uuid));
       END IF;
 
       return jsonb_build_object(

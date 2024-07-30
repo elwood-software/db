@@ -18,7 +18,9 @@ export async function up(db: AnyKysely): Promise<void> {
             ),
           ],
         )
-        .select(() => sql`elwood.get_node_content(p)`.as("content"))
+        .select(() => [
+          sql`elwood.node_content(p.id)`.as("content"),
+        ])
         .where(
           "instance_id",
           "=",
@@ -61,17 +63,8 @@ export async function up(db: AnyKysely): Promise<void> {
             ),
           ],
         )
-        .select(({ selectFrom }) => [
-          selectFrom(`${TableName.Node} as c`)
-            .whereRef("c.parent_id", "=", "p.id")
-            .where(
-              "c.category_id",
-              "=",
-              sql`elwood.node_category_id('CONTENT')`,
-            )
-            .select(() => [sql`elwood.get_node_content(c)`.as("content")])
-            .limit(1)
-            .as("content"),
+        .select(() => [
+          sql`elwood.node_content(p.id)`.as("content"),
         ])
         .where(
           "instance_id",
