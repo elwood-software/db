@@ -9,7 +9,7 @@ export enum TableName {
   StudioCustomer = "studio_customer",
   StudioSubscription = "studio_subscription",
   StudioPlan = "studio_plan",
-  StudioNodePlan = "studio_node_plan",
+  StudioPlanEntitlements = "studio_plan_entitlements",
   StudioWebhook = "studio_webhook",
 }
 

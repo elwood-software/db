@@ -33,11 +33,12 @@ export type ElwoodDatabaseTables = {
   studio_plan: StudioPlanTable;
   studio_subscription: StudioSubscriptionTable;
   studio_customer: StudioCustomerTable;
-  studio_node_plan: StudioNodePlanTable;
+  studio_plan_entitlements: StudioPlanEntitlementsTable;
   studio_webhook: StudioWebhookTable;
   studio_node: StudioNodeTable;
 };
 
+/** NODE */
 export type NodeTable = {
   instance_id: ColumnType<string, string | null, never>;
   id: Generated<string>;
@@ -61,6 +62,7 @@ export type Node = Selectable<NodeTable>;
 export type NewNode = Insertable<NodeTable>;
 export type UpdateNode = Updateable<NodeTable>;
 
+/** STUDIO PLAN */
 export type StudioPlanTable = {
   instance_id: ColumnType<string, string | null, never>;
   id: Generated<string>;
@@ -68,6 +70,7 @@ export type StudioPlanTable = {
     stripe_id: string | null;
   }>;
   name: string;
+  node_id: string;
   description: string | null;
   status: StudioPlanStatus;
   prices:
@@ -86,6 +89,7 @@ export type StudioPlan = Selectable<StudioPlanTable>;
 export type NewStudioPlan = Insertable<StudioPlanTable>;
 export type UpdateStudioPlan = Updateable<StudioPlanTable>;
 
+/** STUDIO SUBSCRIPTION */
 export type StudioSubscriptionTable = {
   instance_id: ColumnType<string, string | null, never>;
   id: Generated<string>;
@@ -104,6 +108,7 @@ export type StudioSubscription = Selectable<StudioSubscriptionTable>;
 export type NewStudioSubscription = Insertable<StudioSubscriptionTable>;
 export type UpdateStudioSubscription = Updateable<StudioSubscriptionTable>;
 
+/** STUDIO CUSTOMER */
 export type StudioCustomerTable = {
   instance_id: ColumnType<string, string | null, never>;
   id: Generated<string>;
@@ -121,7 +126,8 @@ export type StudioCustomer = Selectable<StudioCustomerTable>;
 export type NewStudioCustomer = Insertable<StudioCustomerTable>;
 export type UpdateStudioCustomer = Updateable<StudioCustomerTable>;
 
-export type StudioNodePlanTable = {
+/** STUDIO PLAN ENTITLEMENTS*/
+export type StudioPlanEntitlementsTable = {
   instance_id: ColumnType<string, string | null, never>;
   id: Generated<string>;
   node_id: string;
@@ -133,10 +139,11 @@ export type StudioNodePlanTable = {
   updated_at: ColumnType<Date, never, never>;
 };
 
-export type StudioNodePlan = Selectable<StudioNodePlanTable>;
-export type NewStudioNodePlan = Insertable<StudioNodePlanTable>;
-export type UpdateStudioNodePlan = Updateable<StudioNodePlanTable>;
+export type StudioNodePlan = Selectable<StudioPlanEntitlementsTable>;
+export type NewStudioNodePlan = Insertable<StudioPlanEntitlementsTable>;
+export type UpdateStudioNodePlan = Updateable<StudioPlanEntitlementsTable>;
 
+/** STUDIO WEBHOOKS */
 export type StudioWebhookTable = {
   id: Generated<string>;
   reference_id: string;

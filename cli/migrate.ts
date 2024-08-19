@@ -7,7 +7,9 @@ import {
   NO_MIGRATIONS,
   sql,
 } from "kysely";
+import { expandGlob } from "jsr:@std/fs/expand-glob";
 
+import { VersionFileMigrationProvider } from "@/lib/migration-provider.ts";
 import type { ElwoodDatabaseTables } from "@/types.ts";
 
 export async function migrate(
@@ -15,16 +17,6 @@ export async function migrate(
   __dirname: string,
   subCommand: string,
 ): Promise<void> {
-  const migrator = new Migrator({
-    db: db.withSchema("elwood"),
-    provider: new FileMigrationProvider({
-      fs,
-      path,
-      // This needs to be an absolute path.
-      migrationFolder: path.join(__dirname, "../migrations"),
-    }),
-  });
-
   switch (subCommand) {
     case "up":
       await up();
@@ -49,6 +41,15 @@ export async function migrate(
       await db.schema.createSchema("elwood").execute();
     }
 
+    const migrator = new Migrator({
+      db: db.withSchema("elwood"),
+      provider: new VersionFileMigrationProvider({
+        fs,
+        path,
+        migrationFolder: path.join(__dirname, "../migrations"),
+      }),
+    });
+
     await migrator.migrateTo(NO_MIGRATIONS);
     await migrator.migrateToLatest();
 
@@ -72,6 +73,5 @@ export async function migrate(
   }
 
   async function down() {
-    await migrator.migrateTo(NO_MIGRATIONS);
   }
 }

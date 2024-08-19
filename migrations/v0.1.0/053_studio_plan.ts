@@ -21,6 +21,11 @@ export async function up(db: AnyKysely): Promise<void> {
       .addColumn("name", "text", (col) => col.notNull())
       .addColumn("description", "text", (col) => col)
       .addColumn(
+        "node_id",
+        "uuid",
+        (col) => col.notNull(),
+      )
+      .addColumn(
         "status",
         sql.raw(`elwood.${TypeName.StudioPlanStatus}`),
         (col) => col.notNull().defaultTo("ACTIVE"),
@@ -34,9 +39,14 @@ export async function up(db: AnyKysely): Promise<void> {
         "timestamp",
         (col) =>
           col.defaultTo(sql`now()`),
+      ).addForeignKeyConstraint(
+        "studio_plan_node_id_fk",
+        ["node_id"],
+        TableName.Node,
+        ["id"],
       ));
 
-  await createTable(db, TableName.StudioNodePlan, (tbl) =>
+  await createTable(db, TableName.StudioPlanEntitlements, (tbl) =>
     tbl
       .addColumn(
         "id",
@@ -59,17 +69,17 @@ export async function up(db: AnyKysely): Promise<void> {
         (col) => col.defaultTo(sql`now()`),
       )
       .addForeignKeyConstraint(
-        "studio_node_plan_plan_id_fk",
+        "studio_plan_entitlement_plan_id_fk",
         ["plan_id"],
         TableName.StudioPlan,
         ["id"],
       )
       .addForeignKeyConstraint(
-        "studio_node_plan_node_id_fk",
+        "studio_plan_entitlement_node_id_fk",
         ["node_id"],
         TableName.Node,
         ["id"],
-      ).addUniqueConstraint("studio_node_plan_node_id_plan_id_idx", [
+      ).addUniqueConstraint("studio_plan_entitlement_node_id_plan_id_idx", [
         "instance_id",
         "node_id",
         "plan_id",
@@ -78,5 +88,5 @@ export async function up(db: AnyKysely): Promise<void> {
 
 export async function down(db: AnyKysely): Promise<void> {
   await db.schema.dropTable(TableName.StudioPlan).execute();
-  await db.schema.dropTable(TableName.StudioNodePlan).execute();
+  await db.schema.dropTable(TableName.StudioPlanEntitlements).execute();
 }
