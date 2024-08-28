@@ -8,6 +8,7 @@ import type { ElwoodDatabaseTables } from "@/types.ts";
 import { migrate } from "./migrate.ts";
 import { seed } from "./seed.ts";
 import { compile } from "./compile.ts";
+import { reset } from "./reset.ts";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 const { _ } = parseArgs(Deno.args, {});
@@ -41,12 +42,15 @@ function connect(): Kysely<ElwoodDatabaseTables> {
 
 try {
   switch (cmd) {
-    case "reset":
+    case "reset": {
+      await reset(connect(), __dirname);
+      break;
+    }
     case "migrate": {
       await migrate(
         connect(),
         __dirname,
-        cmd === "reset" ? "reset" : subCommand,
+        subCommand,
       );
       break;
     }
