@@ -1,6 +1,6 @@
 {
   "tasks": {
-    "cli": "deno run --allow-net --allow-read --allow-write --allow-env ./cli/cli.ts"
+    "cli": "deno run --allow-net --allow-read --allow-write --allow-env ./cli/main.ts"
   },
   "name": "@elwood/db",
   "version": "0.0.11",
